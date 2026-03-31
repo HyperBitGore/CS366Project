@@ -2,46 +2,28 @@
 #include <stdlib.h>
 #include "map.h"
 
-int map1[] = {
-1, 1, 1, 1, 1,
-1, 0, 0, 0, 1,
-1, 0, 0, 0, 1,
-1, 0, 0, 0, 1,
-1, 0, 0, 0, 1,
-1, 1, 1, 1, 1
-};
 
 
 int main () {
-	int run = 0;
 	int px = 7;
+	map* m1 = loadMap("map1.txt");
+	printf("width: %d, height: %d\n", m1->width, m1->height);
 	char* input = malloc(1024);
-	while (run < 150) {
+	int run = 1;
+	while (run) {
 		system("clear");
 		int i = 0;
-		for (i = 0; i < 30; i++) {
-			if (i % 5 == 0) {
+		for (i = 0; i < m1->arr_length; i++) {
+			if (i % m1->width == 0 && i != 0) {
 				printf("\n");
-			}
-			if (i == px) {
-				printf("@");
 			} else {
-				switch (map1[i]) {
-					case 1:
-						printf("#");
-						break;	
-					case 0:
-						printf(" ");
-						break;
-				}
-			}
-		}	
-		printf("\n");
+				printf("%c", m1->arr[i]);
+			}	
+		}
 		scanf("%s", input);
 		if (strcmp(input, "right") == 0) {
 			px += 1;	
 		}
-		run += 1;
 	}
 	free(input);
 	return 0;
