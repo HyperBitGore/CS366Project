@@ -1,8 +1,8 @@
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "map.h"
 
-int map[] = {
+int map1[] = {
 1, 1, 1, 1, 1,
 1, 0, 0, 0, 1,
 1, 0, 0, 0, 1,
@@ -26,7 +26,7 @@ int main () {
 			if (i == px) {
 				printf("@");
 			} else {
-				switch (map[i]) {
+				switch (map1[i]) {
 					case 1:
 						printf("#");
 						break;	
