@@ -12,3 +12,4 @@ typedef struct {
 } map;
 
 map* loadMap (const char* name);
+void renderMap (map* m1);
