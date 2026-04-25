@@ -15,6 +15,12 @@ int main () {
 		scanf("%s", input);
 		if (strcmp(input, "right") == 0) {
 			m1->px += 1;	
+		} else if (strcmp(input, "left") == 0) {
+			m1->px -= 1;
+		} else if (strcmp(input, "up") == 0) {
+			m1->py -= 1;
+		} else if (strcmp(input, "down") == 0) {
+			m1->py += 1;
 		}
 	}
 	free(input);

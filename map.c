@@ -21,6 +21,7 @@ map* loadMap (const char* file) {
 				width = count;
 			}
 			height++;
+			count = 0;
 		}
 	}
 	if (fseek(fptr, 0, SEEK_END) == 0) {
@@ -36,12 +37,21 @@ map* loadMap (const char* file) {
 	int i = 0;
 	int px = 0;
 	int py = 0;
+	/* if last line doesn't have newline */
+	if (count > 0) {
+		if (width < count) {
+			width = count;
+		}
+		height++;
+	}
+	int row = 0;
+	count = 0;
 	while ((c = fgetc(fptr)) != EOF) {
 		if ( c != '\n') {
 			switch (c) {
 				case '@':
 					px = count;
-					py = height;
+					py = row;
 					arr[i] = ' ';
 					break;
 				default:
@@ -57,8 +67,14 @@ map* loadMap (const char* file) {
 				}
 			}	
 			count = 0;
+			row++;
 		}
-		printf("%c", c);
+	}
+	if (count > 0) {
+		while (count < width) {
+			arr[i++] = ' ';
+			count++;
+		}
 	}
 	map* m1 = (map*)malloc(sizeof(map));
 	m1->arr = arr;
@@ -75,6 +91,7 @@ map* loadMap (const char* file) {
 void renderMap (map* m1) {
 	int x = 0;
 	int y = 0;
+	printf("px: %d, py: %d\n", m1->px, m1->py);
 	for (; y < m1->height; y++) {
 		for (x = 0; x < m1->width; x++) {
 			if (x == m1->px && y == m1->py) {
