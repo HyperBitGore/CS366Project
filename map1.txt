@@ -5,4 +5,5 @@
 #   #
 #  >#
 #####
-
+EOF
+next=map2.txt
