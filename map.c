@@ -130,8 +130,8 @@ map* loadMap(const char* file) {
         }
 
         return m1;
-}
 
+}
 void renderMap(map* m1) {
         int x;
         int y;

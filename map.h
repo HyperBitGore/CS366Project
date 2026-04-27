@@ -30,3 +30,4 @@ void interactSetup();
 map* interact(map* m1);
 
 #endif
+
