@@ -7,13 +7,23 @@
 #include "character.h"
 
 int main() {
-        map* m1 = loadMap("map1.txt");
-
+        map* m1;
         Character player;
-        char* input = malloc(1024);
-        int run = 1;
+        char* input;
+        int run;
+
+        m1 = loadMap("map1.txt");
+
+        if (m1 == NULL) {
+                printf("Map failed to load.\n");
+                return 1;
+        }
+
+        input = malloc(1024);
+        run = 1;
 
         srand(time(NULL));
+        interactSetup();
         initCharacter(&player, "Hero");
 
         while (run) {
@@ -22,26 +32,21 @@ int main() {
                 system("clear");
                 renderMap(m1);
 
-                printf("\nCommands: right, left, up, down, stats, inv, use, equip, help, quit\n");
+                printf("\nCommands: d, a, w, s, stats, inv, use, equip, help, quit\n");
                 printf("Enter command: ");
                 scanf("%s", input);
 
-                /* Command handling */
-                if (strcmp(input, "right") == 0) {
-                        m1->px += 1;
-
-                } else if (strcmp(input, "left") == 0) {
-                        m1->px -= 1;
-
-                } else if (strcmp(input, "up") == 0) {
-                        m1->py -= 1;
-
-                } else if (strcmp(input, "down") == 0) {
-                        m1->py += 1;
+                if (strcmp(input, "d") == 0){
+			playerMovement(m1, "right");
+		}else if (strcmp(input, "a") ==0){
+			playerMovement(m1, "left");
+		}else if (strcmp(input, "w") ==0){
+                        playerMovement(m1, "up");
+		}else if (strcmp(input, "s") ==0){
+                        playerMovement(m1, "down");
 
                 } else if (strcmp(input, "stats") == 0) {
                         printCharacter(&player);
-
                         printf("Press enter to continue...");
                         getchar();
                         getchar();
@@ -49,7 +54,6 @@ int main() {
 
                 } else if (strcmp(input, "inv") == 0) {
                         showInventory(&player);
-
                         printf("Press enter to continue...");
                         getchar();
                         getchar();
@@ -85,7 +89,10 @@ int main() {
 
                 } else if (strcmp(input, "help") == 0) {
                         printf("\nCommands:\n");
-                        printf("right, left, up, down\n");
+                        printf("w = up\n");
+			printf("s = down\n");
+			printf("a = left\n");
+			printf("d = right\n");
                         printf("stats - show player stats\n");
                         printf("inv - show inventory\n");
                         printf("use - use healing item\n");
@@ -93,6 +100,9 @@ int main() {
                         printf("quit - exit game\n");
 
                         printf("\nMap Symbols:\n");
+                        printf("# = wall\n");
+                        printf("> = next map\n");
+                        printf("< = previous map\n");
                         printf("T = treasure\n");
                         printf("W = weapon\n");
                         printf("A = armor\n");
@@ -110,15 +120,21 @@ int main() {
 
                 tile = m1->arr[m1->py * m1->width + m1->px];
 
-                /* Treasure or items */
+                if (tile == '>' || tile == '<') {
+                        m1 = interact(m1);
+                        continue;
+                }
+
                 if (tile == 'T') {
                         Item treasure;
-                        int randomTreasure = rand() % 3;
+                        int randomTreasure;
+
+                        randomTreasure = rand() % 3;
 
                         if (randomTreasure == 0) {
                                 treasure = (Item){"Potion", ITEM_HEALING, 25};
                         } else if (randomTreasure == 1) {
-                                treasure = (Item){"Hi-Potion", ITEM_HEALING, 50};
+                                treasure = (Item){"Large Potion", ITEM_HEALING, 50};
                         } else {
                                 treasure = (Item){"Mega Potion", ITEM_HEALING, 75};
                         }
@@ -133,19 +149,23 @@ int main() {
                         getchar();
                 }
 
-                /* Weapons */
                 else if (tile == 'W') {
                         Item weapon;
-                        int randomWeapon = rand() % 3;
+                        int randomWeapon;
+
+                        randomWeapon = rand() % 5;
 
                         if (randomWeapon == 0) {
-                                weapon = (Item){"Iron Sword", ITEM_WEAPON, 5};
+                                weapon = (Item){"Stick", ITEM_WEAPON, 5};
                         } else if (randomWeapon == 1) {
-                                weapon = (Item){"Steel Sword", ITEM_WEAPON, 10};
-                        } else {
-                                weapon = (Item){"Magic Blade", ITEM_WEAPON, 15};
-                        }
-
+                                weapon = (Item){"Paper Sword", ITEM_WEAPON, 10};
+                        } else if (randomWeapon == 2) {
+                                weapon = (Item){"Stone Sword", ITEM_WEAPON, 15};
+                        } else if (randomWeapon == 3) { 
+				weapon = (Item){"Steel Blade", ITEM_WEAPON, 18};
+			} else {
+				weapon = (Item){"Battle Axe", ITEM_WEAPON, 25};
+			}
                         printf("You found %s!\n", weapon.name);
                         addItem(&player, weapon);
 
@@ -156,18 +176,23 @@ int main() {
                         getchar();
                 }
 
-                /* Armors */
                 else if (tile == 'A') {
                         Item armor;
-                        int randomArmor = rand() % 3;
+                        int randomArmor;
+
+                        randomArmor = rand() % 5;
 
                         if (randomArmor == 0) {
-                                armor = (Item){"Leather Armor", ITEM_ARMOR, 3};
+                                armor = (Item){"Paper Armor", ITEM_ARMOR, 3};
                         } else if (randomArmor == 1) {
-                                armor = (Item){"Iron Armor", ITEM_ARMOR, 6};
-                        } else {
-                                armor = (Item){"Knight Armor", ITEM_ARMOR, 10};
-                        }
+                                armor = (Item){"Wizard Robes", ITEM_ARMOR, 6};
+                        } else if (randomArmor == 2) {
+                                armor = (Item){"Iron Armor", ITEM_ARMOR, 10};
+                        } else if (randomArmor ==3) {
+				armor = (Item){"Knight Armor", ITEM_ARMOR, 15};
+			} else {
+				armor = (Item){"Power Armor", ITEM_ARMOR, 20};
+			}
 
                         printf("You found %s!\n", armor.name);
                         addItem(&player, armor);
@@ -177,12 +202,37 @@ int main() {
                         printf("Press enter to continue...");
                         getchar();
                         getchar();
-                }
+                }else if (tile == 'B') {
+		       Character boss;
+	       	
+		       initCharacter(&boss, "Big Bad Boss Man");
+		       boss.hp = 170;
+		       boss.maxHp = 170;
+		       boss.attack = 22; 
+	   	       boss.defense = 7;
 
-                /* Enemies */
-                else if (tile == 'E') {
+		       startCombat(&player, &boss); 
+			if (!isAlive(&player)) {
+ 				run = 0; 
+			} else {
+				printf("\n=================================\n");
+				printf("CONGRATULATIONS!\n");
+				printf("You defeated the final boss!\n");
+				printf("You beat the game!\n");
+				printf("=================================\n");
+			
+				printf("Press enter to end");
+                        	getchar();
+                        	getchar();
+				run = 0;
+			}
+			m1->arr[m1->py * m1->width + m1->px] = ' ';
+
+		}else if (tile == 'E') {
                         Character enemy;
-                        int randomEnemy = rand() % 3;
+                        int randomEnemy;
+
+                        randomEnemy = rand() % 5;
 
                         if (randomEnemy == 0) {
                                 initCharacter(&enemy, "Slime");
@@ -198,14 +248,25 @@ int main() {
                                 enemy.attack = 10;
                                 enemy.defense = 2;
 
-                        } else {
+                        } else if (randomEnemy == 2) {
                                 initCharacter(&enemy, "Orc");
                                 enemy.hp = 80;
                                 enemy.maxHp = 80;
                                 enemy.attack = 15;
                                 enemy.defense = 4;
-                        }
-
+                        } else if (randomEnemy == 3){ 
+				initCharacter(&enemy, "Skeleton");
+                                enemy.hp = 60;
+                                enemy.maxHp = 60;
+                                enemy.attack = 12;
+                                enemy.defense = 3;
+			} else {
+				initCharacter(&enemy, "Troll");
+                                enemy.hp = 90;
+                                enemy.maxHp = 90;
+                                enemy.attack = 17;
+                                enemy.defense = 5;
+			}
                         startCombat(&player, &enemy);
 
                         if (!isAlive(&player)) {
@@ -214,9 +275,7 @@ int main() {
 
                         m1->arr[m1->py * m1->width + m1->px] = ' ';
 
-                        printf("Press enter to continue...");
-                        getchar();
-                        getchar();
+                        
                 }
         }
 

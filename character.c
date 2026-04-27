@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "character.h"
+#include <stdlib.h>
 
 /* Set up a new character with default starting stats */
 void initCharacter(Character *player, char name[]) {
@@ -149,10 +150,10 @@ void startCombat(Character *player, Character *enemy) {
     int choice;
     int slot;
 
-    printf("\nA %s appeared!\n", enemy->name);
-
     while (isAlive(player) && isAlive(enemy)) {
-        printf("\n--- Combat ---\n");
+        system("clear");
+
+        printf("=== Combat ===\n");
         printf("%s HP: %d / %d\n", player->name, player->hp, player->maxHp);
         printf("%s HP: %d / %d\n", enemy->name, enemy->hp, enemy->maxHp);
 
@@ -164,7 +165,33 @@ void startCombat(Character *player, Character *enemy) {
         scanf("%d", &choice);
 
         if (choice == 1) {
+            system("clear");
+
+            printf("=== Combat ===\n");
             basicAttack(player, enemy);
+
+            if (!isAlive(enemy)) {
+                printf("\nYou defeated the %s!\n", enemy->name);
+                printf("Press enter to continue...");
+                getchar();
+                getchar();
+                break;
+            }
+
+            printf("\n%s's turn!\n", enemy->name);
+            basicAttack(enemy, player);
+
+            if (!isAlive(player)) {
+                printf("\nYou were defeated!\n");
+                printf("Press enter to continue...");
+                getchar();
+                getchar();
+                break;
+            }
+
+            printf("\nPress enter to continue...");
+            getchar();
+            getchar();
         }
         else if (choice == 2) {
             showInventory(player);
@@ -173,30 +200,30 @@ void startCombat(Character *player, Character *enemy) {
             scanf("%d", &slot);
 
             useItem(player, slot - 1);
+
+            printf("\n%s's turn!\n", enemy->name);
+            basicAttack(enemy, player);
+
+            printf("\nPress enter to continue...");
+            getchar();
+            getchar();
         }
         else if (choice == 3) {
             printCharacter(player);
-            continue;
+
+            printf("Press enter to continue...");
+            getchar();
+            getchar();
         }
         else {
             printf("Invalid choice.\n");
-            continue;
-        }
-
-        if (!isAlive(enemy)) {
-            printf("\nYou defeated the %s!\n", enemy->name);
-            break;
-        }
-
-        printf("\n%s's turn!\n", enemy->name);
-        basicAttack(enemy, player);
-
-        if (!isAlive(player)) {
-            printf("\nYou were defeated!\n");
-            break;
+            printf("Press enter to continue...");
+            getchar();
+            getchar();
         }
     }
 }
+       
 
 /* Print all player stats */
 void printCharacter(Character *player) {
